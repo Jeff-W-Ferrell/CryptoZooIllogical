@@ -1,0 +1,106 @@
+﻿
+@{ ViewBag.Title = "Crypto-Zoo-illogical"; }
+
+<script src="~/Scripts/knockout-3.4.2.js" type="text/Javascript"></script>
+
+<h2>Welcome to the CryptoZoo Store!</h2>
+</br>
+<table>
+    <tr>
+        <th width="100">First name: </th>
+        <th width="100"><input data-bind="value: firstName" /></p></th>
+    </tr>
+    <tr>
+        <th width="100">Last name: </th>
+        <th width="100"><input data-bind="value: lastName" /></p></th>
+    </tr>
+    <tr>
+        <th width="100">Address: </th>
+        <th width="100"><input data-bind="value: address" /></p></th>
+    </tr>
+</table>
+</br>
+<table>
+    <thead>
+        <tr>
+            <th width="200">Creature Type</th>
+            <th width="200">Maturity Level</th>
+            <th width="200">Creature Cost</th>
+        </tr>
+    </thead>
+
+    <h3>Choose the Crypto-Creatures that are right for you! </br> &nbsp;&nbsp;&nbsp; <em><small>Limit one per species.</small></em></h3>
+    <tbody data-bind="foreach: featureCreatures">
+        <tr>
+            <td data-bind="text: name"></td>
+            <td><select data-bind="options: $root.availableAges, value: age, optionsText: 'ageRange'"></select></td>
+            <td data-bind="text: formattedPrice"></td>
+        </tr>
+    </tbody>
+</table>
+
+</br>
+
+<h3 data-bind="visible: totalCost() > 0">
+    Thank you for your interest <span data-bind="text: fullName"></span></br></br>
+    Your total cost will be: $<span data-bind="text: totalCost().toFixed(2)"></span></br></br>
+    <span><em>All orders are final. Payment will be cash on delivery. Please be sure to have this amount available at all times, as these creatures are elusive and rare.</em></span>
+    <span><em>We will eventually deliver the requested specimens alive to: </em></span></br>
+    <em><strong><span data-bind="text: address"</span></strong></em>
+</h3>
+
+<script type="text/Javascript">
+    function CreateCreatures(name, CryptoCreature) {
+        var self = this;
+        self.name = name;
+        self.age = ko.observable(CryptoCreature);
+
+        self.formattedPrice = ko.computed(function () {
+            var price = self.age().price;
+            return price ? "$" + price.toFixed(2) : "None";
+        });
+    }
+
+    function CryptoCreaturesViewModel() {
+        var self = this;
+
+        self.firstName = ko.observable("");
+        self.lastName = ko.observable("");
+        self.address = ko.observable("");
+
+        self.fullName = ko.computed(function () {
+            return self.firstName() + " " + self.lastName();
+        }, self);
+
+        self.availableAges = [
+            { ageRange: " - Select -", price: 0 },
+            { ageRange: "Juvenile", price: 2350000.89 },
+            { ageRange: "Adolescent", price: 3550000.25 },
+            { ageRange: "Adult", price: 145000.95 }
+        ];
+
+        self.featureCreatures = ko.observableArray([
+            new CreateCreatures("Big Foot", self.availableAges[0]),
+            new CreateCreatures("Chupacabra", self.availableAges[0]),
+            new CreateCreatures("Skunk Ape", self.availableAges[0]),
+            new CreateCreatures("Kraken", self.availableAges[0]),
+            new CreateCreatures("Bunyip", self.availableAges[0]),
+            new CreateCreatures("Leshy", self.availableAges[0])
+        ]);
+
+        self.totalCost = ko.computed(function () {
+            var total = 0;
+            for (var i = 0; i < self.featureCreatures().length; i++)
+                total += self.featureCreatures()[i].age().price;
+            return total;
+        });
+    }
+
+    ko.applyBindings(new CryptoCreaturesViewModel());
+</script>
+
+
+
+
+
+       
